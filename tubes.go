@@ -1,33 +1,31 @@
 package main
+
 import (
 	"fmt"
 	"sort"
 )
+
 type Mahasiswa struct {
 	NIM        string
 	Nama       string
 	Tunggakan  int
 	TotalBayar int
 }
+
 type Pembayaran struct {
 	NIM     string
 	Nominal int
 	Tanggal string
 }
+
 var kasKelas []Mahasiswa
 var riwayatPembayaran []Pembayaran
 const TargetIuran = 100000
+
 func main() {
-	kasKelas = []Mahasiswa{
-		{"101", "Budi", 100000, 0},
-		{"102", "Andi", 50000, 50000},
-		{"103", "Citra", 0, 100000},
-		{"104", "Dewi", 100000, 0},
-	}
-	riwayatPembayaran = []Pembayaran{
-		{"102", 50000, "01-05-2026"},
-		{"103", 100000, "02-05-2026"},
-	}
+	kasKelas = []Mahasiswa{}
+	riwayatPembayaran = []Pembayaran{}
+
 	for {
 		fmt.Println("\n-- Aplikasi Informasi Kas Mahasiswa (SIKAS) --")
 		fmt.Println("1. Tambah Mahasiswa")
@@ -39,9 +37,11 @@ func main() {
 		fmt.Println("7. Urutkan Data Mahasiswa")
 		fmt.Println("8. Laporan Statistik & Riwayat")
 		fmt.Println("9. Keluar")
+
 		var pilih int
 		fmt.Print("Pilih: ")
 		fmt.Scan(&pilih)
+
 		switch pilih {
 		case 1:
 			tambah()
@@ -67,23 +67,29 @@ func main() {
 		}
 	}
 }
+
 func tambah() {
 	var nim string
 	var nama string
+
 	fmt.Print("NIM: ")
 	fmt.Scan(&nim)
 	fmt.Print("Nama Mahasiswa (Tanpa spasi): ")
 	fmt.Scan(&nama)
+
 	tunggakan := TargetIuran
 	totalBayar := 0
+
 	kasKelas = append(kasKelas, Mahasiswa{nim, nama, tunggakan, totalBayar})
 	fmt.Println("Data mahasiswa berhasil ditambahkan.")
 }
+
 func lihat() {
 	if len(kasKelas) == 0 {
 		fmt.Println("Data kosong.")
 		return
 	}
+
 	fmt.Println("\nDaftar Mahasiswa:")
 	for i, m := range kasKelas {
 		if m.Nama == "" {
@@ -94,14 +100,17 @@ func lihat() {
 			i+1, m.NIM, m.Nama, m.TotalBayar, m.Tunggakan)
 	}
 }
+
 func ubah() {
 	if len(kasKelas) == 0 {
 		fmt.Println("Data kosong.")
 		return
 	}
+
 	var nim string
 	fmt.Print("Masukkan NIM mahasiswa yang ingin diubah: ")
 	fmt.Scan(&nim)
+
 	found := -1
 	for i := 0; i < len(kasKelas); i++ {
 		if kasKelas[i].NIM == nim {
@@ -114,6 +123,7 @@ func ubah() {
 		fmt.Println("Mahasiswa tidak ditemukan.")
 		return
 	}
+
 	var namaBaru string
 	fmt.Print("Nama baru (Tanpa spasi): ")
 	fmt.Scan(&namaBaru)
@@ -121,6 +131,7 @@ func ubah() {
 	kasKelas[found].Nama = namaBaru
 	fmt.Println("Data mahasiswa berhasil diperbarui.")
 }
+
 func hapus() {
 	var nim string
 	fmt.Print("Masukkan NIM mahasiswa yang ingin dihapus: ")
@@ -135,16 +146,20 @@ func hapus() {
 	}
 	fmt.Println("Mahasiswa tidak ditemukan.")
 }
+
 func catatPembayaran() {
 	if len(kasKelas) == 0 {
 		fmt.Println("Data kosong.")
 		return
 	}
+
 	var nim string
 	var nominal int
 	var tanggal string
+
 	fmt.Print("Masukkan NIM mahasiswa: ")
 	fmt.Scan(&nim)
+
 	found := -1
 	for i := 0; i < len(kasKelas); i++ {
 		if kasKelas[i].NIM == nim {
@@ -152,26 +167,33 @@ func catatPembayaran() {
 			break
 		}
 	}
+
 	if found == -1 {
 		fmt.Println("Mahasiswa tidak ditemukan.")
 		return
 	}
+
 	if kasKelas[found].Tunggakan == 0 {
 		fmt.Println("Mahasiswa ini sudah LUNAS.")
 		return
 	}
+
 	fmt.Print("Masukkan tanggal pembayaran (Contoh: 15-05-2026): ")
 	fmt.Scan(&tanggal)
 	fmt.Print("Masukkan nominal pembayaran: Rp")
 	fmt.Scan(&nominal)
+
 	kasKelas[found].TotalBayar += nominal
 	kasKelas[found].Tunggakan = TargetIuran - kasKelas[found].TotalBayar
+
 	if kasKelas[found].Tunggakan < 0 {
 		kasKelas[found].Tunggakan = 0
 	}
+
 	riwayatPembayaran = append(riwayatPembayaran, Pembayaran{nim, nominal, tanggal})
 	fmt.Println("Pembayaran berhasil dicatat.")
 }
+
 func cari() {
 	var metode int
 	fmt.Println("Pilih metode pencarian Mahasiswa Belum Lunas:")
@@ -189,6 +211,7 @@ func cari() {
 		fmt.Println("Metode tidak valid.")
 	}
 }
+
 func seqSearch() {
 	fmt.Println("\n--- Hasil Sequential Search (Daftar Tunggakan) ---")
 	found := false
@@ -200,21 +223,26 @@ func seqSearch() {
 		}
 		j++
 	}
+
 	if !found {
 		fmt.Println("Semua mahasiswa sudah lunas.")
 	}
 }
+
 func binSearch() {
 	var nim string
 	fmt.Print("Masukkan NIM yang ingin dicek: ")
 	fmt.Scan(&nim)
+
 	sort.Slice(kasKelas, func(i, j int) bool {
 		return kasKelas[i].NIM < kasKelas[j].NIM
 	})
+
 	found := -1
 	kr := 0
 	kn := len(kasKelas) - 1
 	var med int
+
 	for kr <= kn && found == -1 {
 		med = (kr + kn) / 2
 		if nim > kasKelas[med].NIM {
@@ -225,6 +253,7 @@ func binSearch() {
 			found = med
 		}
 	}
+
 	if found != -1 {
 		m := kasKelas[found]
 		fmt.Printf("Ditemukan: %s | Tunggakan: Rp%d\n", m.Nama, m.Tunggakan)
@@ -237,17 +266,21 @@ func binSearch() {
 		fmt.Println("Data mahasiswa tidak ditemukan.")
 	}
 }
+
 func urutkan() {
 	if len(kasKelas) == 0 {
 		fmt.Println("Data kosong.")
 		return
 	}
+
 	fmt.Println("Pilih metode pengurutan:")
 	fmt.Println("1. Selection Sort (Berdasarkan Nama - Ascending)")
 	fmt.Println("2. Insertion Sort (Berdasarkan Tunggakan - Descending)")
 	fmt.Print("Pilihan: ")
+
 	var pilihan int
 	fmt.Scan(&pilihan)
+
 	switch pilihan {
 	case 1:
 		selectionSortNama()
@@ -259,8 +292,10 @@ func urutkan() {
 		fmt.Println("Pilihan tidak valid")
 		return
 	}
+
 	lihat()
 }
+
 func selectionSortNama() {
 	n := len(kasKelas)
 	for i := 0; i < n-1; i++ {
@@ -276,6 +311,7 @@ func selectionSortNama() {
 		kasKelas[i] = temp
 	}
 }
+
 func insertionSortTunggakan() {
 	n := len(kasKelas)
 	for i := 1; i < n; i++ {
@@ -288,13 +324,16 @@ func insertionSortTunggakan() {
 		kasKelas[j] = temp
 	}
 }
+
 func laporan() {
 	if len(kasKelas) == 0 {
 		fmt.Println("Tidak ada data untuk dilaporkan.")
 		return
 	}
+
 	var totalSaldo int
 	var countLunas, countMenunggak int
+
 	for i := 0; i < len(kasKelas); i++ {
 		totalSaldo += kasKelas[i].TotalBayar
 		if kasKelas[i].Tunggakan == 0 {
@@ -303,12 +342,14 @@ func laporan() {
 			countMenunggak++
 		}
 	}
+
 	fmt.Println("\n--- Laporan Statistik Kas Mahasiswa ---")
 	fmt.Printf("Total Mahasiswa        : %d orang\n", len(kasKelas))
 	fmt.Printf("Total Saldo Kas        : Rp%d\n", totalSaldo)
 	fmt.Println("Status Pembayaran      :")
 	fmt.Printf(" - Sudah Melunasi Iuran: %d mahasiswa\n", countLunas)
 	fmt.Printf(" - Belum Melunasi Iuran: %d mahasiswa\n", countMenunggak)
+
 	fmt.Println("\n--- Riwayat Transaksi Kas ---")
 	if len(riwayatPembayaran) == 0 {
 		fmt.Println("Belum ada transaksi pembayaran.")
